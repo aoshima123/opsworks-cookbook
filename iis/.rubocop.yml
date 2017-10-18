@@ -1,0 +1,12 @@
+Lint/ParenthesesAsGroupedExpression:
+  Exclude:
+    - 'test/integration/**/*'
+
+Style/GuardClause:
+  Exclude:
+    - 'libraries/helper.rb'
+
+Style/PredicateName:
+  Exclude:
+    - 'spec/**/*'
+    - 'test/integration/**/*'
