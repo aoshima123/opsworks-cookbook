@@ -1,15 +1,34 @@
-[![Build Status](https://travis-ci.org/brint/wordpress-cookbook.svg?branch=master)](https://travis-ci.org/brint/wordpress-cookbook)
-[![Dependency Status](https://gemnasium.com/brint/wordpress-cookbook.svg)](https://gemnasium.com/brint/wordpress-cookbook)
-
 Description
 ===========
 
-The Chef WordPress cookbook installs and configures WordPress according to the instructions at http://codex.wordpress.org/Installing_WordPress.
+Installs and configures Wordpress according to the instructions at http://codex.wordpress.org/Installing_WordPress. Does not set up a wordpress blog. You will need to do this manually by going to http://hostname/wp-admin/install.php (this URL may be different if you change the attribute values).
 
-Description
-===========
+Changes
+=======
 
-This cookbook does not set up the WordPress blog. You will need to do this manually by going to http://hostname/wp-admin/install.php (this URL may be different if you change the attribute values).
+## v0.8.8:
+
+* [COOK-826] -  recipe doesn't quote password string
+
+## v0.8.6:
+
+* [COOK-534] - allow server_aliases to overridden by an attribute
+* [COOK-799] - fixed disables .htaccess breaking permalink feature
+* [COOK-820] - guard node.save with check for chef-solo in our cookbooks
+
+## v0.8.4:
+
+* [COOK-406] - wp-config.php.erb has wrong CRLF encoding
+* Dropping explicit support for Red Hat platforms due to issues in php
+  and mysql cookbooks (COOK-603, COOK-672, COOK-816, COOK-679)
+  
+### v0.8.2:
+
+* [COOK-435] Don't set the mysql root user password in wordpress cookbook
+* [COOK-535] - recursively create the directory
+* RHEL/CentOS/Fedora support (yeah!)
+* cleaned up node attribute keys
+* cleaned up README.md
 
 Requirements
 ============
@@ -17,73 +36,63 @@ Requirements
 Platform
 --------
 
-* Ubuntu 12.04, 14.04
-* RHEL/CentOS 5, 6
-* Windows
+* Debian, Ubuntu
+
+Tested on:
+
+* Ubuntu 9.04, 9.10, 10.04
 
 Cookbooks
 ---------
 
 * mysql
-* mysql_chef_gem
 * php
 * apache2
-* iis
-* windows
-* openssl (uses library to generate secure passwords)
-* selinux (used to disable selinux for MySQL on RHEL-based systems)
+* opensssl (uses library to generate secure passwords)
 
 Attributes
 ==========
 
-### WordPress
+* `node['wordpress']['version']` - Set the version to download.
+* `node['wordpress']['checksum']` - sha256sum of the tarball, make sure this matches for the version!
+* `node['wordpress']['dir']` - Set the location to place wordpress files. Default is /var/www.
+* `node['wordpress']['db']['database']` - Wordpress will use this MySQL database to store its data.
+* `node['wordpress']['db']['user']` - Wordpress will connect to MySQL using this user.
+* `node['wordpress']['db']['password']` - Password for the Wordpress MySQL user. The default is a randomly generated string.
+* `node['wordpress']['server_aliases']` - Array of ServerAliases used in apache vhost. Default is `node['fqdn']`.
 
-* `node['wordpress']['version']` - Version of WordPress to download. Use 'latest' to download most recent version.
-* `node['wordpress']['parent_dir']` - Parent directory to where WordPress will be extracted. (Windows Only)
-* `node['wordpress']['dir']` - Location to place WordPress files.
-* `node['wordpress']['db']['root_password']` - Root password for MySQL (added for support with community cookbook version 6+)
-* `node['wordpress']['db']['instance_name']` - Name of the MySQL instance to use with MySQL (community cookbook version 6+)
-* `node['wordpress']['db']['name']` - Name of the WordPress MySQL database.
-* `node['wordpress']['db']['user']` - Name of the WordPress MySQL user.
-* `node['wordpress']['db']['pass']` - Password of the WordPress MySQL user. By default, generated using openssl cookbook.
-* `node['wordpress']['db']['prefix']` - Prefix of all MySQL tables created by WordPress.
-* `node['wordpress']['db']['host']` - Host of the WordPress MySQL database.
-* `node['wordpress']['db']['port']` - Port of the WordPress MySQL database.
-* `node['wordpress']['db']['charset']` - [Character set](http://dev.mysql.com/doc/refman/5.7/en/charset-charsets.html) of the WordPress MySQL database tables. Defaults to 'utf8'.
-* `node['wordpress']['db']['collate']` - [Collation](http://dev.mysql.com/doc/refman/5.7/en/charset-collation-effect.html) of the WordPress MySQL database tables.
-* `node['wordpress']['db']['mysql_version']` - Version of MySQL to install (for supporting community cookbook version 6+)
+Attributes will probably never need to change (these all default to randomly generated strings):
 
-* `node['wordpress']['allow_multisite']` - Enable [multisite](http://codex.wordpress.org/Create_A_Network) features (default: false).
-* `node['wordpress']['wp_config_options']` - A hash of options to define in wp_config.php, output as key value pairs into a PHP constant e.g. `define( '<%= @key %>', <%= @value %> );`. Note: for values you will need to add single quotes around text but omit them for booleans and numbers. (default: {}).
-* `node['wordpress']['config_perms']` - Permissions to set for a site's wp-config.php.
-* `node['wordpress']['server_aliases']` - Aliases to use when setting up Virtual Host with Nginx or Apache
-* `node['wordpress']['server_port']` - Port to use when setting up the Virtual Host with Nginx or Apache
+* `node['wordpress']['keys']['auth']`
+* `node['wordpress']['keys']['secure_auth']`
+* `node['wordpress']['keys']['logged_in']`
+* `node['wordpress']['keys']['nonce']`
 
-* `node['wordpress']['install']['user']` - Install user used for WordPress file permissions and the PHP-FPM user (if applicable)
-* `node['wordpress']['install']['group']` - Install group used for WordPress file permissions and the PHP-FPM group (if necessary)
-
-* `node['wordpress']['parent_dir']` - Parent directory of where WordPress will be installed. This is used in the Windows installation to determine where the .zip will be downloaded to.
-* `node['wordpress']['dir']` - Path where WordPress should be installed
-* `node['wordpress']['url']` - URL to the zip or tarball installer of WordPress
-* `node['wordpress']['server_name']` - Hostname used for setting up the Virtual Host configuration for your WordPress site
-
-* `node['wordpress']['php_options']` - Additional PHP settings for the installation.
+The random generation is handled with the secure_password method in the openssl cookbook which is a cryptographically secure random generator and not predictable like the random method in the ruby standard library.
 
 Usage
 =====
 
+If a different version than the default is desired, download that version and get the SHA256 checksum (sha256sum on Linux systems), and set the version and checksum attributes.
+
 Add the "wordpress" recipe to your node's run list or role, or include the recipe in another cookbook.
+
+Chef will install and configure mysql, php, and apache2 according to the instructions at http://codex.wordpress.org/Installing_WordPress. Does not set up a wordpress blog. You will need to do this manually by going to http://hostname/wp-admin/install.php (this URL may be different if you change the attribute values).
+
+The mysql::server recipe needs to come first, and contain an execute resource to install mysql privileges from the grants.sql template in this cookbook.
+
+## Note about MySQL
+
+This cookbook will decouple the mysql::server and be smart about detecting whether to use a local database or find a database server in the environment in a later version.
 
 License and Author
 ==================
 
-* Author:: Barry Steinglass (barry@opscode.com)
-* Author:: Joshua Timberman (joshua@opscode.com)
-* Author:: Seth Chisamore (schisamo@opscode.com)
-* Author:: Lucas Hansen (lucash@opscode.com)
-* Author:: Julian C. Dunn (jdunn@getchef.com)
+Author:: Barry Steinglass (barry@opscode.com)
+Author:: Joshua Timberman (joshua@opscode.com)
+Author:: Seth Chisamore (schisamo@opscode.com)
 
-Copyright:: 2010-2013, Chef Software, Inc.
+Copyright:: 2010-2011, Opscode, Inc
 
 Licensed under the Apache License, Version 2.0 (the "License");
 you may not use this file except in compliance with the License.
