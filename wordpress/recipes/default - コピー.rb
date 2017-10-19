@@ -6,11 +6,11 @@ apt_package "nginx-extras" do
 action :install
 end
 
-apt_package "php7-fpm" do
+apt_package "php5-fpm" do
 action :install
 end
 
-apt_package "php7-mysql" do
+apt_package "php5-mysql" do
 action :install
 end
 
