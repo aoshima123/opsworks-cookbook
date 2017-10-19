@@ -1,3 +1,11 @@
+apt_package "php5-fpm" do
+action :remove
+end
+
+apt_package "php5-mysql" do
+action :remove
+end
+
 apt_package "mysql-server-5.6" do
 action:install
 end
@@ -5,6 +13,10 @@ end
 apt_package "nginx-extras" do
 action :install
 end
+
+execute "add-apt-repository ppa:ondrej/php"
+execute "apt-get update"
+
 
 apt_package "php7.0-fpm" do
 action :install
