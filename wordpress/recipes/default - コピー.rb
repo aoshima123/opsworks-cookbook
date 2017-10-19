@@ -1,9 +1,3 @@
-execute "apt-get update "
-execute "apt-get purge php5-fpm "
-execute "apt-get --purge autoremove"
-execute "apt-get purge php5-mysql "
-execute "apt-get --purge autoremove"
-
 apt_package "mysql-server-5.6" do
 action:install
 end
@@ -12,15 +6,11 @@ apt_package "nginx-extras" do
 action :install
 end
 
-execute "add-apt-repository ppa:ondrej/php"
-execute "apt-get update"
-
-
-apt_package "php7.0-fpm" do
+apt_package "php5-fpm" do
 action :install
 end
 
-apt_package "php7.0-mysql" do
+apt_package "php5-mysql" do
 action :install
 end
 
