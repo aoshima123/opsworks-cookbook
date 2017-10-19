@@ -1,11 +1,9 @@
 apt_package "php5-fpm" do
 action :remove
-options :-y
 end
 
 apt_package "php5-mysql" do
 action :install
-options :-y
 end
 
 
@@ -23,12 +21,10 @@ execute "apt-get update"
 
 apt_package "php7.0-fpm" do
 action :install
-options :-y
 end
 
 apt_package "php7.0-mysql" do
 action :install
-options :-y
 end
 
 
