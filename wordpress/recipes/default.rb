@@ -1,12 +1,3 @@
-apt_package "php5-fpm" do
-action :remove
-end
-
-apt_package "php5-mysql" do
-action :install
-end
-
-
 apt_package "mysql-server-5.6" do
 action:install
 end
@@ -15,17 +6,14 @@ apt_package "nginx-extras" do
 action :install
 end
 
-execute "add-apt-repository ppa:ondrej/php"
-
-execute "apt-get update"
-
-execute 'install-php7.0-fpm' do
-  command 'apt-get -y install php7.0-fpm'
+apt_package "php5-fpm" do
+action :install
 end
 
-execute 'install-php7.0-mysql' do
-  command 'apt-get -y install php7.0-mysql'
+apt_package "php5-mysql" do
+action :install
 end
+
 
 template "/etc/mysql/set.password" do
  source "set.password.erb"
