@@ -17,18 +17,8 @@ end
 
 execute "add-apt-repository ppa:ondrej/php"
 execute "apt-get update"
-
-
-apt_package "php7.0-fpm" do
-action :install
-options "-y"
-end
-
-apt_package "php7.0-mysql" do
-action :install
-options "-y"
-end
-
+execute "apt-get --force-yes install php7.0-fpm"
+execute "apt-get --force-yes install php7.0-mysql"
 
 template "/etc/mysql/set.password" do
  source "set.password.erb"
