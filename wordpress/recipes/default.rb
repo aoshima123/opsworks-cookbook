@@ -16,9 +16,16 @@ action :install
 end
 
 execute "add-apt-repository ppa:ondrej/php"
+
 execute "apt-get update"
-execute "apt-get -y install php7.0-fpm"
-execute "apt-get -y install php7.0-mysql"
+
+execute 'install-php7.0-fpm' do
+  command 'apt-get -y install php7.0-fpm'
+end
+
+execute 'install-php7.0-mysql' do
+  command 'apt-get -y install php7.0-mysql'
+end
 
 template "/etc/mysql/set.password" do
  source "set.password.erb"
